@@ -39,7 +39,8 @@ namespace WebApiExample.Controllers {
             }
             var order = await _context.Orders
                                     .Include(x => x.Customer)
-                                    .Include(x => x.Orderlines)
+                                    .Include(x => x.Orderlines)!
+                                    .ThenInclude(x => x.Item)
                                     .SingleOrDefaultAsync(x => x.Id == id);
 
             if(order == null) {
@@ -47,6 +48,22 @@ namespace WebApiExample.Controllers {
             }
 
             return order;
+        }
+
+        [HttpGet("ok")]
+        public async Task<ActionResult<IEnumerable<Order>>> GetOrdersWithStatusOk() {
+            if(_context.Orders == null) {
+                return NotFound();
+            }
+            //return await _context.Orders
+            //                        .Where(x => x.Status == "OK")
+            //                        .Include(x => x.Customer)
+            //                        .ToListAsync();
+
+            return await (from o in _context.Orders
+                          where o.Status == "OK"
+                          select o)
+                          .ToListAsync();
         }
 
         // PUT: api/Orders/5
@@ -70,6 +87,22 @@ namespace WebApiExample.Controllers {
             }
 
             return NoContent();
+        }
+
+        [HttpPut("ok/{id}")]
+        public async Task<IActionResult> SetOrderStatusToOk(int id, Order order) {
+            order.Status = "OK";
+            return await PutOrder(id, order);
+        }
+        [HttpPut("backorder/{id}")]
+        public async Task<IActionResult> SetOrderStatusToBackorder(int id, Order order) {
+            order.Status = "BACKORDER";
+            return await PutOrder(id, order);
+        }
+        [HttpPut("closed/{id}")]
+        public async Task<IActionResult> SetOrderStatusToClosed(int id, Order order) {
+            order.Status = "CLOSED";
+            return await PutOrder(id, order);
         }
 
         // POST: api/Orders
