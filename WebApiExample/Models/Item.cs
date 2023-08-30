@@ -11,6 +11,4 @@ public class Item {
     [Column(TypeName = "decimal(7,2)")]
     public decimal Price { get; set; }
 
-    public virtual ICollection<Orderline> Orderlines { get; set;}
-
 }

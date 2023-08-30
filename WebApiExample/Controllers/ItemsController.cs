@@ -35,8 +35,7 @@ namespace WebApiExample.Controllers {
             if(_context.Items == null) {
                 return NotFound();
             }
-            var item = await _context.Items.Include(x => x.Orderlines)
-                            .SingleOrDefaultAsync(x => x.Id == id);
+            var item = await _context.Items.SingleOrDefaultAsync(x => x.Id == id);
 
             if(item == null) {
                 return NotFound();
